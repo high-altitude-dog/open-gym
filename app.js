@@ -212,7 +212,7 @@ function installView() {
   ];
 }
 
-/** One per phone and browser: its logos, its name, then what to tap (Simple Icons logos, icons/brand/). */
+/** One per phone and browser: its logos, its name, then what to tap (logos in icons/brand/, see vendor/README.md). */
 const INSTALL_OPTIONS = [
   { os: 'android', browser: 'chrome', name: 'Android · Chrome', steps: 'installChrome' },
   { os: 'android', browser: 'firefox', name: 'Android · Firefox', steps: 'installFirefox' },

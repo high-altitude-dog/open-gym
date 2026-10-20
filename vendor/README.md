@@ -9,5 +9,6 @@ Bundled once by `../tools/vendor.sh` (esbuild 0.28.2, ES2020 modules, not minifi
 
 ## Logos
 
-`../icons/brand/*.svg`: Android, Apple, Google Chrome, Firefox and Safari logos from [Simple Icons](https://simpleicons.org) 16.33.0, filled with each brand's colour, to show which install steps fit which phone and browser. The trademarks belong to their owners. Simple Icons' SVGs are CC0, except the Android robot: *The Android robot is reproduced or modified from work created and shared by Google and used according to terms described in the Creative Commons 3.0 Attribution License* (credited on the install screen).
-
+`../icons/brand/*.svg`, to show which install steps fit which phone and browser. The trademarks belong to their owners.
+- `chrome.svg`, `firefox.svg`, `safari.svg`: the full-colour browser logos from [browser-logos](https://github.com/alrra/browser-logos) (`@browser-logos/chrome` 2.0.0, `@browser-logos/firefox` 3.0.10, `@browser-logos/safari` 2.1.0), unchanged.
+- `android.svg`, `apple.svg`: from [Simple Icons](https://simpleicons.org) 16.33.0 (both marks are single-colour), filled with the brand colour. Simple Icons' SVGs are CC0, except the Android robot: *The Android robot is reproduced or modified from work created and shared by Google and used according to terms described in the Creative Commons 3.0 Attribution License* (credited on the install screen).
