@@ -37,8 +37,8 @@ export async function load() {
   }
 }
 
-/** Replaces any stored seed with a fresh one and returns it. The phone must be linked again. */
-export async function reset() {
+/** Makes and stores a fresh seed (replacing an unreadable one) and returns it. The phone must then be linked. */
+export async function create() {
   const seed = crypto.getRandomValues(new Uint8Array(32));
   const wrap = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
   const iv = crypto.getRandomValues(new Uint8Array(12));

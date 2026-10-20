@@ -24,8 +24,6 @@ let timer = 0;
 let clockOff = 0;
 /** store.keepData(): true, false (refused: warn), or null (this browser can't say). */
 let keptData = null;
-/** A one-off line on the register screen, e.g. "new key saved". */
-let note = '';
 let message = 0;
 let byteIndex = 0;
 let installEvent = null;
@@ -107,7 +105,6 @@ function go(to) {
 addEventListener('popstate', (e) => {
   if (screen === 'code' || screen === 'register') {
     screen = e.state?.screen === 'register' ? 'register' : 'code';
-    note = '';
     render();
   }
 });
@@ -136,7 +133,7 @@ function codeView() {
   const byte = el('img', 'byte');
   byte.src = `img/${BYTES[byteIndex]}.webp`;
   byte.alt = 'Byte';
-  const link = el('button', 'link', s.registerButton);
+  const link = el('button', 'link', s.linkAgain);
   link.onclick = () => go('register');
   return [
     el('header', 'head', [byte, el('div', 'hello', [el('h1', '', greeting), el('p', '', s.motivation[message])]), flags()]),
@@ -148,20 +145,22 @@ function codeView() {
   ];
 }
 
+/**
+ * The link screen: a step of its own, not a sub-page. The phone can't tell when the reader has
+ * linked it, so the member taps Done when the reader flashes green. No Reset key (owner, 20 Oct):
+ * a lost key is replaced through the welcome screen, and an unlinked key can be linked again.
+ */
 function registerView() {
-  const reset = el('button', 'button', s.resetKey);
-  reset.onclick = confirmReset;
-  const back = el('button', 'button', s.back);
-  back.onclick = () => history.back();
+  const done = el('button', 'button primary', s.done);
+  done.onclick = () => history.back(); // always to the code screen, below this one in history
   return [
     el('header', 'head end', [flags()]),
     bannerBox(),
+    el('h1', 'title', s.linkTitle),
     qr(),
-    el('p', 'instructions', s.registerInstructions),
+    el('ol', 'steps', s.linkSteps.map((step) => el('li', '', step))),
     el('p', 'mono', s.keyId + G.hex(G.keyId(devPk))),
-    note ? el('p', 'note', note) : '',
-    reset,
-    back,
+    done,
   ];
 }
 
@@ -172,8 +171,7 @@ function welcomeView() {
     make.disabled = true;
     try {
       keptData = await store.keepData(); // first, while the tap still counts as the member's choice
-      useSeed(await store.reset());
-      note = s.keySaved;
+      useSeed(await store.create());
       go('register');
       checkClock();
     } catch {
@@ -237,28 +235,6 @@ function flags() {
     };
     return b;
   }));
-}
-
-function confirmReset() {
-  const dialog = el('dialog', 'dialog');
-  const cont = el('button', 'button primary', s.resetContinue);
-  const back = el('button', 'button', s.back);
-  dialog.append(el('h2', '', s.resetTitle), el('p', '', s.resetMessage), el('div', 'row', [back, cont]));
-  back.onclick = () => dialog.close();
-  dialog.onclose = () => dialog.remove();
-  cont.onclick = async () => {
-    cont.disabled = true;
-    try {
-      useSeed(await store.reset());
-      note = s.keySaved;
-    } catch {
-      note = s.keyError;
-    }
-    dialog.close();
-    render();
-  };
-  document.body.append(dialog);
-  dialog.showModal();
 }
 
 // ---- The code ----
