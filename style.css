@@ -40,10 +40,36 @@ button { font: inherit; color: inherit; }
 
 .logo { width: 96px; height: 96px; border-radius: 22px; margin-top: 8px; }
 .title { font-size: 26px; margin: 16px 16px 4px; }
-.step { text-align: left; align-self: stretch; padding: 12px; margin: 8px 16px; border: 1px solid var(--line); border-radius: 8px; }
-.option p { margin: 6px 0 0; }
-.option-head { display: flex; align-items: center; gap: 8px; font-size: 17px; }
-.brand { width: 28px; height: 28px; flex: none; }
+
+/* Install screen: written for people new to phones. Big text, one action per line, two steps. */
+.lead { font-size: 19px; }
+.card { align-self: stretch; margin: 14px 12px 0; padding: 16px; border: 2px solid var(--line); border-radius: 14px; text-align: left; font-size: 19px; }
+.card.next { border-color: #111; }
+.card.done { opacity: .75; }
+.card h2 { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; font-size: 22px; line-height: 1.2; }
+.card p { margin: 8px 0; }
+.num { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #111; color: #fff; font-size: 22px; }
+.num.ok { background: #1a7f37; }
+.saved { color: #1a7f37; font-weight: bold; }
+.option-head { display: flex; align-items: center; gap: 8px; margin: 4px 0 8px; font-size: 18px; }
+.brand { width: 32px; height: 32px; flex: none; }
+.howto { margin: 0; padding-left: 28px; line-height: 1.5; }
+.howto li { margin: 10px 0; padding-left: 4px; }
+.aside { color: var(--grey); font-size: 16px; }
+/* The buttons members have to find, drawn as they look: ⋮, ⋯ and Safari's Share. */
+.key { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 34px; margin: 0 2px; padding: 0 6px; border: 2px solid #111; border-radius: 9px; font-weight: bold; font-size: 22px; line-height: 1; vertical-align: middle; }
+.key img { width: 24px; height: 24px; }
+.button.big { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 56px; margin: 12px 0 4px; font-size: 20px; text-decoration: none; }
+.address { font: 16px/1.3 ui-monospace, Menlo, monospace; word-break: break-all; }
+.tile { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 8px 0 4px; }
+.tile img { width: 72px; height: 72px; border-radius: 16px; }
+.tile span { font-size: 15px; }
+details { align-self: stretch; text-align: left; }
+summary { min-height: 48px; padding: 12px 0; font-size: 18px; text-decoration: underline; cursor: pointer; }
+.other { margin: 18px 12px 0; padding: 0 4px; }
+.other .option { margin: 8px 0 20px; font-size: 18px; }
+.byhand { margin-top: 8px; }
+.allow { font-size: 17px; }
 .small { color: var(--grey); font-size: 14px; margin-top: 16px; }
 .credit { color: var(--grey); font-size: 12px; margin: 24px 16px 16px; }
 .warn { background: var(--yellow); padding: 12px 16px; }
