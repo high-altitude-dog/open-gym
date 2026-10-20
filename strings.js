@@ -25,6 +25,8 @@ const ES = {
   installSave: 'Guardar en la pantalla de inicio',
   installByHand: 'O hazlo a mano',
   installSaved: 'Guardada ✓',
+  // Chrome builds a small Android app first: the icon came about a minute later on the owner's phone (20 Oct).
+  installWait: 'El ícono puede tardar hasta un minuto en aparecer.',
   installOther: '¿Otro celular o navegador?',
   installChrome: ['Toca {menu} (arriba o abajo, a la derecha).', 'Toca «Instalar aplicación» o «Agregar a la pantalla principal».', 'Toca «Instalar» (o «Agregar»).'],
   // Firefox's words from Mozilla's Latin American Spanish (es-MX/es-AR) strings; its menu opens at the bottom (owner's phone, 20 Oct).
@@ -103,6 +105,7 @@ const EN = {
   installSave: 'Save to home screen',
   installByHand: 'Or do it by hand',
   installSaved: 'Saved ✓',
+  installWait: 'The icon can take up to a minute to appear.',
   installOther: 'Another phone or browser?',
   installChrome: ['Tap {menu} (top or bottom right).', 'Tap “Install app” or “Add to Home screen”.', 'Tap “Install” (or “Add”).'],
   installFirefox: ['Tap {menu} (top or bottom right).', 'A menu opens at the bottom: tap {more} “More”.', 'Tap {addapp} “Add app to Home screen”.', 'Tap “Add”.'],

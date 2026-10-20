@@ -232,7 +232,11 @@ function installView() {
     ...top,
     el('p', 'lead', s.installIntro),
     card(installed ? '✓' : '1', s.installStep1, installed ? [el('p', 'saved', s.installSaved)] : stepOne(where, option), installed ? 'done' : ''),
-    card('2', s.installStep2, [el('p', '', s.installStep2Text), tile()], installed ? 'next' : ''),
+    card('2', s.installStep2, [
+      el('p', '', s.installStep2Text),
+      tile(),
+      installed && where === 'chrome' ? el('p', 'aside', s.installWait) : '',
+    ], installed ? 'next' : ''),
     el('details', 'other', [
       el('summary', '', s.installOther),
       ...INSTALL_OPTIONS.filter((o) => o !== option).map((o) => el('div', 'option', [optionHead(o), ...howTo(o)])),
