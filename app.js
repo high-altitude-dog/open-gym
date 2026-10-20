@@ -166,7 +166,7 @@ function codeView() {
 
 /**
  * The link screen: a step of its own, not a sub-page. The phone can't tell when the reader has
- * linked it, so the member taps Done when the reader flashes green. No Reset key (owner, 20 Oct):
+ * linked it, so the member taps Done when the reader's lights dance. No Reset key (owner, 20 Oct):
  * a lost key is replaced through the welcome screen, and an unlinked key can be linked again.
  */
 function registerView() {

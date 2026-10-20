@@ -9,7 +9,7 @@ const ES = {
   linkSteps: [
     'Muestra esta pantalla al personal de recepción.',
     'Cuando te lo indiquen, pon el celular boca arriba debajo del lector.',
-    'Cuando el lector parpadee en verde, toca Listo.',
+    'Cuando las luces del lector bailen, toca Listo.',
   ],
   done: 'Listo',
   keyId: 'ID de clave: ',
@@ -91,7 +91,7 @@ const EN = {
   linkSteps: [
     'Show this screen to the front desk staff.',
     'When they tell you, place your phone face up under the reader.',
-    'When the reader flashes green, tap Done.',
+    "When the reader's lights dance, tap Done.",
   ],
   done: 'Done',
   keyId: 'Key ID: ',
