@@ -208,6 +208,7 @@ function installView() {
     el('p', '', s.installIntro),
     install,
     el('p', 'step', s.installAndroid),
+    el('p', 'step', s.installFirefox),
     el('p', 'step', s.installIphone),
     el('p', 'step', s.installThen),
     el('p', 'small', s.inAppBrowser),
