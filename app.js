@@ -205,13 +205,31 @@ function installView() {
     el('h1', 'title', 'Open Gym'),
     el('p', '', s.installIntro),
     install,
-    el('p', 'step', s.installAndroid),
-    el('p', 'step', s.installFirefox),
-    el('p', 'step', s.installIphone),
+    ...INSTALL_OPTIONS.map(installOption),
     el('p', 'step', s.installThen),
     el('p', 'small', s.inAppBrowser),
-    el('p', 'credit', 'Byte the dog artwork used with permission'),
+    el('p', 'credit', 'Byte the dog artwork used with permission. Android robot: Google, CC BY 3.0.'),
   ];
+}
+
+/** One per phone and browser: its logos, its name, then what to tap (Simple Icons logos, icons/brand/). */
+const INSTALL_OPTIONS = [
+  { os: 'android', browser: 'chrome', name: 'Android · Chrome', steps: 'installChrome' },
+  { os: 'android', browser: 'firefox', name: 'Android · Firefox', steps: 'installFirefox' },
+  { os: 'apple', browser: 'safari', name: 'iPhone · Safari', steps: 'installSafari' },
+];
+
+function installOption(o) {
+  const icon = (name) => {
+    const img = el('img', 'brand');
+    img.src = `icons/brand/${name}.svg`;
+    img.alt = ''; // the name beside it says the same
+    return img;
+  };
+  return el('div', 'step option', [
+    el('div', 'option-head', [icon(o.os), icon(o.browser), el('strong', '', o.name)]),
+    el('p', '', s[o.steps]),
+  ]);
 }
 
 function logo() {
