@@ -11,7 +11,7 @@ main { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; 
 p { margin: 8px 16px; }
 .hidden { display: none; }
 
-.head { width: 100%; display: flex; align-items: center; gap: 8px; padding: 12px 8px 0 12px; text-align: left; }
+.head { width: 100%; display: flex; align-items: center; gap: 8px; padding: 12px 16px 0 12px; text-align: left; }
 .head.end { justify-content: flex-end; }
 .byte { width: 88px; height: 88px; flex: none; }
 .hello { flex: 1; min-width: 0; }
@@ -38,6 +38,13 @@ body.linking::after { content: ''; position: fixed; inset: 0; border: 10px solid
 .link-title { flex: 1; margin: 6px 0 0; font-size: 21px; line-height: 1.2; }
 body.linking .qr { margin: 8px auto 4px; }
 .key-id { margin: 0 16px; font-size: 17px; }
+/* Short screens (older phones): a little less text above the QR, so Listo still fits. */
+@media (max-height: 640px) {
+  .link-head { padding-top: 14px; }
+  .link-title { font-size: 18px; }
+  .steps { font-size: 15px; line-height: 1.25; }
+  .steps li { margin: 2px 0; }
+}
 body.linking .button { margin: 8px 16px 16px; }
 
 button { font: inherit; color: inherit; }
@@ -50,11 +57,19 @@ button { font: inherit; color: inherit; }
 .title { font-size: 26px; margin: 16px 16px 4px; }
 
 /* Install screen: written for people new to phones. Big text, one action per line, two steps. */
-.lead { font-size: 19px; }
+.install-head { align-self: stretch; display: flex; align-items: center; gap: 12px; padding: 12px 8px 0 16px; }
+.install-head .logo { width: 56px; height: 56px; border-radius: 13px; margin: 0; flex: none; }
+.install-title { flex: 1; min-width: 0; margin: 0; font-size: clamp(19px, 6.4vw, 25px); text-align: left; white-space: nowrap; }
+.lead { align-self: stretch; margin: 12px 16px 0; font-size: 18px; text-align: left; }
+.foot-flags { margin: 8px 0 20px; }
+@media (max-width: 330px) {
+  .install-head .logo { width: 44px; height: 44px; border-radius: 10px; }
+  .flag { font-size: 24px; padding: 6px 4px; }
+}
 .card { align-self: stretch; margin: 14px 12px 0; padding: 16px; border: 2px solid var(--line); border-radius: 14px; text-align: left; font-size: 19px; }
 .card.next { border-color: #111; }
 .card.done { opacity: .75; }
-.card h2 { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; font-size: 22px; line-height: 1.2; }
+.card h2 { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; font-size: 21px; line-height: 1.2; }
 .card p { margin: 8px 0; }
 .num { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #111; color: #fff; font-size: 22px; }
 .num.ok { background: #1a7f37; }
@@ -84,7 +99,7 @@ summary { min-height: 48px; padding: 12px 0; font-size: 18px; text-decoration: u
 .or-stay { margin: 4px 0 6px; color: var(--grey); }
 /* The animated phone: one picture per step, the matching step highlighted. */
 .demo { display: flex; justify-content: center; margin: 4px 0 14px; }
-.demo-phone { width: 190px; height: auto; cursor: pointer; }
+.demo-phone { height: min(313px, 42vh); width: auto; cursor: pointer; } /* smaller on short screens, so the steps show sooner */
 .demo-phone text { font-family: system-ui, -apple-system, Roboto, sans-serif; }
 .demo-frame { opacity: 0; transition: opacity .4s; }
 .demo-frame.on { opacity: 1; }

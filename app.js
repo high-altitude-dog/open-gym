@@ -35,9 +35,12 @@ let wakeLock = null;
 /** The install screen's animation: the pending switch to its next picture. */
 let demoTimer = 0;
 let qrCanvas = null;
+/** Modules across the QR on screen, quiet zone included (for the 70% floor). */
+let qrModules = 0;
 /** CSS pixels the QR may take on the link screen once fitted to the screen; 0 = not fitted yet. */
 let qrRoom = 0;
-let banners = null;
+/** The warning boxes on screen: the clock one above the QR (urgent), the storage note below it. */
+let warn = { clock: null, note: null };
 
 // Only on the PC, for testing in a tab: http://localhost:8000/?tab
 const devTab = location.hostname === 'localhost' && new URLSearchParams(location.search).has('tab');
@@ -124,7 +127,7 @@ function render() {
   qrRoom = 0;
   clearTimeout(demoTimer);
   qrCanvas = null;
-  banners = null;
+  warn = { clock: null, note: null };
   document.documentElement.lang = s === ES ? 'es' : 'en';
   // The link screen is framed in blue (staff spot it across the desk); blue isn't a reader light colour.
   document.body.classList.toggle('linking', screen === 'register');
@@ -147,13 +150,17 @@ function codeView() {
   byte.alt = 'Byte';
   const link = el('button', 'link', s.linkAgain);
   link.onclick = () => go('register');
+  // The whole QR on the first screen, whatever the phone: the storage note goes below it and the
+  // flags to the bottom (as in the Android app); only the clock warning, urgent and rare, stays above.
   return [
-    el('header', 'head', [byte, el('div', 'hello', [el('h1', '', greeting), el('p', '', s.motivation[message])]), flags()]),
-    bannerBox(),
+    el('header', 'head', [byte, el('div', 'hello', [el('h1', '', greeting), el('p', '', s.motivation[message])])]),
+    clockBox(),
     qr(),
     el('p', 'hold', s.holdUp),
+    noteBox(),
     el('p', 'hint', s.brightness),
     link,
+    el('div', 'foot-flags', [flags()]),
   ];
 }
 
@@ -169,11 +176,12 @@ function registerView() {
   return [
     // No bar: the blue frame marks the screen for staff; the flags share the title's line (owner, 20 Oct).
     el('header', 'link-head', [el('h1', 'link-title', s.linkTitle), flags()]),
-    bannerBox(),
+    clockBox(),
     el('ol', 'steps', s.linkSteps.map((step) => el('li', '', step))),
     qr(),
     el('p', 'mono key-id', s.keyId + G.hex(G.keyId(devPk))),
     done,
+    noteBox(),
   ];
 }
 
@@ -212,7 +220,8 @@ function welcomeView() {
  */
 function installView() {
   const where = platform();
-  const top = [el('header', 'head end', [flags()]), logo(), el('h1', 'title', 'Open Gym')];
+  // Compact: icon, name and flags in one row, so step 1 starts on the first screen of a small phone.
+  const top = [el('header', 'install-head', [logo(), el('h1', 'install-title', 'Open Gym'), flags()])];
   if (where === 'computer') {
     const canvas = el('canvas', 'qr');
     draw(qrcodegen.QrCode.encodeText(pageUrl(), qrcodegen.QrCode.Ecc.MEDIUM), canvas, 260);
@@ -365,8 +374,8 @@ function demo(browser, list) {
 /** Text with {menu}, {share}, {more} and {addapp} drawn as the buttons and icons they name. */
 function withKeys(text) {
   return text.split(/(\{menu\}|\{share\}|\{more\}|\{addapp\})/).filter(Boolean).map((part) => {
-    if (part === '{menu}') return keyCap('⋮', 'menu');
-    if (part === '{more}') return keyCap('⋯', 'more');
+    if (part === '{menu}') return keyCap('⋮', s === ES ? 'menú' : 'menu');
+    if (part === '{more}') return keyCap('⋯', s === ES ? 'más opciones' : 'more options');
     if (part === '{addapp}') {
       const img = el('img', '');
       img.src = 'icons/ui/add-to-homescreen.svg';
@@ -429,7 +438,7 @@ function tick() {
     lastT = t;
     const code = screen === 'register' ? G.registrationCode(devPk, k, t) : G.liveCode(devPk, k, t);
     draw(screen === 'register' ? G.registrationQr(code) : G.liveQr(code));
-    if (screen === 'register') requestAnimationFrame(fitLink);
+    requestAnimationFrame(fitQr);
   }
   timer = setTimeout(tick, 10_000 - (Date.now() % 10_000) + 20);
 }
@@ -443,6 +452,7 @@ function draw(code, canvas = qrCanvas, room = qrRoom || Math.min(document.docume
   const dpr = window.devicePixelRatio || 1;
   const scale = Math.max(1, Math.floor((room * dpr) / n));
   const side = n * scale;
+  if (canvas === qrCanvas) qrModules = n;
   canvas.width = canvas.height = side;
   canvas.style.width = canvas.style.height = `${side / dpr}px`;
   const c = canvas.getContext('2d');
@@ -457,21 +467,34 @@ function draw(code, canvas = qrCanvas, room = qrRoom || Math.min(document.docume
 }
 
 /**
- * Link screen: shrinks the QR until Done fits on the screen as well, but never below 70% of the
- * screen's width (the Android app's floor, so the reader still reads it at 5–10 cm). On a very
- * small screen, or with a warning showing, Done then sits just below and the page scrolls.
+ * Shrinks the QR until what must be seen fits on the first screen: on the code screen the whole QR,
+ * on the link screen Done too. Never below 70% of the screen's width (the Android app's floor, so
+ * the reader still reads it at 5–10 cm), rounded up to whole device pixels per module; on a very
+ * small screen the page then scrolls.
  */
-function fitLink() {
-  if (screen !== 'register' || !qrCanvas) return;
-  const over = document.documentElement.scrollHeight - window.innerHeight;
+function fitQr() {
+  if (!qrCanvas?.isConnected) return;
+  const last = screen === 'register' ? document.querySelector('main .button.primary') : qrCanvas;
+  if (!last) return;
+  const over = last.getBoundingClientRect().bottom + window.scrollY + 12 - window.innerHeight;
   if (over <= 0) return;
   const now = qrCanvas.getBoundingClientRect().height;
-  const room = Math.max(document.documentElement.clientWidth * 0.7, now - over - 2);
+  const dpr = window.devicePixelRatio || 1;
+  const floor = (Math.ceil((document.documentElement.clientWidth * 0.7 * dpr) / qrModules) * qrModules) / dpr;
+  const room = Math.max(floor, now - over);
   if (room < now - 1) {
     qrRoom = room;
     lastT = -1;
     tick();
   }
+}
+
+/** Something above the QR changed size (a warning came or went): size the QR again. */
+function refit() {
+  if (!qrCanvas?.isConnected) return;
+  qrRoom = 0;
+  lastT = -1;
+  tick();
 }
 
 addEventListener('resize', () => {
@@ -484,18 +507,22 @@ addEventListener('resize', () => {
 
 // ---- Clock, storage and screen warnings ----
 
-function bannerBox() {
-  banners = el('div', 'banners');
+function clockBox() {
+  warn.clock = el('div', 'banners');
   fillBanners();
-  return banners;
+  return warn.clock;
+}
+
+function noteBox() {
+  warn.note = el('div', 'banners');
+  fillBanners();
+  return warn.note;
 }
 
 function fillBanners() {
-  if (!banners) return;
-  banners.replaceChildren(
-    clockOff ? el('p', 'banner', s.clockOff(clockOff)) : '',
-    keptData === false ? el('p', 'banner soft', s.storageWarning) : '',
-  );
+  warn.clock?.replaceChildren(clockOff ? el('p', 'banner', s.clockOff(clockOff)) : '');
+  warn.note?.replaceChildren(keptData === false ? el('p', 'banner soft', s.storageWarning) : '');
+  refit();
 }
 
 /**
