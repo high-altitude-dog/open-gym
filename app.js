@@ -5,6 +5,7 @@ import * as store from './store.js';
 import { ALL, ES } from './strings.js';
 import { GYM_PK_HEX } from './gym.js';
 import qrcodegen from './vendor/qrcodegen.js';
+import { installDemo } from './demo.js';
 
 const gymPk = G.unhex(GYM_PK_HEX);
 /** Byte gym stills 10–18 (Byte the dog artwork used with permission, not under the app's MIT licence). */
@@ -31,6 +32,8 @@ let installEvent = null;
 /** Set when the browser says the app was saved to the home screen: step 1 shows done. */
 let installed = false;
 let wakeLock = null;
+/** The install screen's animation: the pending switch to its next picture. */
+let demoTimer = 0;
 let qrCanvas = null;
 let banners = null;
 
@@ -116,9 +119,12 @@ addEventListener('popstate', (e) => {
 
 function render() {
   clearTimeout(timer);
+  clearTimeout(demoTimer);
   qrCanvas = null;
   banners = null;
   document.documentElement.lang = s === ES ? 'es' : 'en';
+  // The link screen is framed in blue (staff spot it across the desk); blue isn't a reader light colour.
+  document.body.classList.toggle('linking', screen === 'register');
   const views = { install: installView, welcome: welcomeView, code: codeView, register: registerView };
   app.replaceChildren(...views[screen]());
   if (qrCanvas) {
@@ -157,6 +163,7 @@ function registerView() {
   const done = el('button', 'button primary', s.done);
   done.onclick = () => history.back(); // always to the code screen, below this one in history
   return [
+    el('div', 'link-badge', s.linkBadge),
     el('header', 'head end', [flags()]),
     bannerBox(),
     el('h1', 'title', s.linkTitle),
@@ -206,7 +213,7 @@ function installView() {
   if (where === 'computer') {
     const canvas = el('canvas', 'qr');
     draw(qrcodegen.QrCode.encodeText(pageUrl(), qrcodegen.QrCode.Ecc.MEDIUM), canvas, 260);
-    return [...top, card(null, s.onComputer, [el('p', '', s.onComputerText), canvas]), credit()];
+    return [...top, card(null, s.onComputer, [el('p', '', s.onComputerText), canvas])];
   }
   const option = INSTALL_OPTIONS.find((o) => o.browser === where);
   return [
@@ -218,15 +225,15 @@ function installView() {
       el('summary', '', s.installOther),
       ...INSTALL_OPTIONS.filter((o) => o !== option).map((o) => el('div', 'option', [optionHead(o), ...howTo(o)])),
     ]),
-    credit(),
   ];
 }
 
 function stepOne(where, option) {
   if (where === 'android-other') {
-    const open = el('a', 'button primary big', s.openInChrome);
-    open.href = `intent://${location.host}${location.pathname}#Intent;scheme=https;package=com.android.chrome;end`;
-    return [el('p', '', s.openInChromeText), open];
+    // No browser named: Android opens the phone's own browser (Chrome may be switched off, as on the owner's Samsung).
+    const open = el('a', 'button primary big', s.openInBrowser);
+    open.href = `intent://${location.host}${location.pathname}#Intent;scheme=https;end`;
+    return [el('p', '', s.openInBrowserText), open];
   }
   if (where === 'ios-other') {
     const copy = el('button', 'button primary big', s.copyLink);
@@ -250,7 +257,7 @@ function stepOne(where, option) {
     };
     return [optionHead(option), save, el('details', 'byhand', [el('summary', '', s.installByHand), ...howTo(option)])];
   }
-  return [optionHead(option), ...howTo(option)];
+  return [optionHead(option), ...howTo(option, true)];
 }
 
 /** A numbered step: a big number (or ✓) and a title, then its content. */
@@ -264,11 +271,7 @@ function tile() {
   const img = el('img', '');
   img.src = 'icons/icon-192.png';
   img.alt = '';
-  return el('div', 'tile', [img, el('span', '', 'Open Gym')]);
-}
-
-function credit() {
-  return el('p', 'credit', 'Byte the dog artwork used with permission. Android robot: Google, CC BY 3.0, recoloured.');
+  return el('div', 'tile', [el('span', 'ring'), img, el('span', '', 'Open Gym')]);
 }
 
 const pageUrl = () => location.origin + location.pathname;
@@ -279,8 +282,10 @@ function platform() {
   const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   if (ios) return /CriOS|FxiOS|EdgiOS|OPiOS|GSA\/|FBAN|FBAV|Instagram|Line\//.test(ua) ? 'ios-other' : 'safari';
   if (/Android/.test(ua)) {
-    // Samsung Internet, other browsers and in-app browsers (WhatsApp, Facebook, Instagram): to Chrome.
-    if (/; wv\)|FBAN|FBAV|Instagram|SamsungBrowser|EdgA|OPR\/|YaBrowser|MiuiBrowser|UCBrowser/.test(ua)) return 'android-other';
+    // In-app browsers (Facebook, Instagram, Android WebView) and browsers we have no steps for: to the phone's browser.
+    if (/; wv\)|FBAN|FBAV|Instagram/.test(ua)) return 'android-other';
+    if (/SamsungBrowser/.test(ua)) return 'samsung';
+    if (/EdgA|OPR\/|YaBrowser|MiuiBrowser|UCBrowser/.test(ua)) return 'android-other';
     if (/Firefox\//.test(ua)) return 'firefox';
     if (/Chrome\//.test(ua)) return 'chrome';
     return 'android-other';
@@ -293,6 +298,7 @@ const INSTALL_OPTIONS = [
   { os: 'apple', browser: 'safari', name: 'iPhone · Safari', steps: 'installSafari' },
   { os: 'android', browser: 'chrome', name: 'Android · Chrome', steps: 'installChrome' },
   { os: 'android', browser: 'firefox', name: 'Android · Firefox', steps: 'installFirefox' },
+  { os: 'android', browser: 'samsung', name: 'Android · Samsung Internet', steps: 'installSamsung' },
 ];
 
 function optionHead(o) {
@@ -305,11 +311,36 @@ function optionHead(o) {
   return el('div', 'option-head', [icon(o.os), icon(o.browser), el('strong', '', o.name)]);
 }
 
-function howTo(o) {
-  return [
-    el('ol', 'howto', s[o.steps].map((t) => el('li', '', withKeys(t)))),
-    el('p', 'aside', withKeys(s[`${o.steps}Note`])),
-  ];
+function howTo(o, animate = false) {
+  const list = el('ol', 'howto', s[o.steps].map((t) => el('li', '', withKeys(t))));
+  const note = s[`${o.steps}Note`]; // Safari and Samsung Internet
+  return [...(animate ? demo(o.browser, list) : []), list, note ? el('p', 'aside', withKeys(note)) : ''];
+}
+
+/**
+ * The animated phone above the steps: one picture per step, about 3 s each, the matching step
+ * highlighted. A tap on the picture (or a step) stops it there, to go one step at a time. With
+ * "reduce motion" set on the phone it never moves by itself.
+ */
+function demo(browser, list) {
+  const d = installDemo(browser, s);
+  if (!d || d.frames.length !== list.children.length) return [];
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let i = 0;
+  const show = (n) => {
+    i = n % d.frames.length;
+    d.frames.forEach((f, j) => f.classList.toggle('on', j === i));
+    [...list.children].forEach((li, j) => li.classList.toggle('now', j === i));
+  };
+  const play = () => {
+    demoTimer = setTimeout(() => { show(i + 1); play(); }, i === d.frames.length - 1 ? 4000 : 3000);
+  };
+  const stop = () => clearTimeout(demoTimer);
+  d.pic.addEventListener('click', () => { stop(); show(i + 1); });
+  [...list.children].forEach((li, j) => li.addEventListener('click', () => { stop(); show(j); }));
+  show(0);
+  if (!still) play();
+  return [el('div', 'demo', [d.pic]), still ? el('p', 'aside center', s.demoTapHint) : ''];
 }
 
 /** Text with {menu}, {share} and {more} drawn as the buttons they name. */

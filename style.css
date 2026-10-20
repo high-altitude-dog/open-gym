@@ -1,5 +1,5 @@
 /* White everywhere, dark mode or not: the reader's camera needs black on white. */
-:root { color-scheme: light; --ink: #000; --grey: #505050; --line: #d0d0d0; --yellow: #ffd600; --soft: #fff3c4; }
+:root { color-scheme: only light; --link: #1d4ed8; --ink: #000; --grey: #505050; --line: #d0d0d0; --yellow: #ffd600; --soft: #fff3c4; }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: #fff; color: var(--ink); }
 body {
@@ -31,6 +31,10 @@ p { margin: 8px 16px; }
 .steps { align-self: stretch; margin: 0 16px; padding-left: 28px; text-align: left; font-size: 18px; }
 .steps li { margin: 6px 0; }
 .mono { font: 20px/1.3 ui-monospace, "SFMono-Regular", Menlo, monospace; }
+/* Link screen: a blue frame round the whole screen and a big VINCULAR bar, so staff can tell it from
+   the daily code at a glance. Blue: not a colour the reader's lights use. The QR keeps its white margin. */
+body.linking::after { content: ''; position: fixed; inset: 0; border: 10px solid var(--link); pointer-events: none; z-index: 10; }
+.link-badge { align-self: stretch; padding: 14px 16px 12px; background: var(--link); color: #fff; font-size: 30px; font-weight: 800; letter-spacing: .08em; }
 
 button { font: inherit; color: inherit; }
 .link { margin-top: 32px; min-height: 48px; padding: 8px 16px; border: 0; background: none; color: var(--grey); font-size: 15px; text-decoration: underline; cursor: pointer; }
@@ -70,6 +74,25 @@ summary { min-height: 48px; padding: 12px 0; font-size: 18px; text-decoration: u
 .other .option { margin: 8px 0 20px; font-size: 18px; }
 .byhand { margin-top: 8px; }
 .allow { font-size: 17px; }
+/* The animated phone: one picture per step, the matching step highlighted. */
+.demo { display: flex; justify-content: center; margin: 4px 0 14px; }
+.demo-phone { width: 190px; height: auto; cursor: pointer; }
+.demo-phone text { font-family: system-ui, -apple-system, Roboto, sans-serif; }
+.demo-frame { opacity: 0; transition: opacity .4s; }
+.demo-frame.on { opacity: 1; }
+.tap, .tap-box { transform-box: fill-box; transform-origin: center; animation: tap 1.5s ease-out infinite; }
+.tap-box { animation-name: tap-box; }
+@keyframes tap { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(1.7); opacity: 0; } }
+@keyframes tap-box { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(1.15, 1.45); opacity: 0; } }
+.howto li { cursor: pointer; border-radius: 8px; transition: background .3s; }
+.howto li.now { background: #fde3d3; font-weight: bold; }
+.center { text-align: center; }
+.tile { position: relative; }
+.tile .ring { position: absolute; top: 0; width: 72px; height: 72px; border: 3px solid #e8590c; border-radius: 18px; animation: ring 1.8s ease-out infinite; }
+@keyframes ring { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(1.35); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .tap, .tap-box, .tile .ring { animation: none; opacity: 0; }
+  .demo-frame, .howto li { transition: none; }
+}
 .small { color: var(--grey); font-size: 14px; margin-top: 16px; }
-.credit { color: var(--grey); font-size: 12px; margin: 24px 16px 16px; }
 .warn { background: var(--yellow); padding: 12px 16px; }
