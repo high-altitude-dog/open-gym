@@ -1,0 +1,53 @@
+/* White everywhere, dark mode or not: the reader's camera needs black on white. */
+:root { color-scheme: light; --ink: #000; --grey: #505050; --line: #d0d0d0; --yellow: #ffd600; --soft: #fff3c4; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #fff; color: var(--ink); }
+body {
+  font: 16px/1.35 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  -webkit-text-size-adjust: 100%;
+}
+main { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center; }
+p { margin: 8px 16px; }
+.hidden { display: none; }
+
+.head { width: 100%; display: flex; align-items: center; gap: 8px; padding: 12px 8px 0 12px; text-align: left; }
+.head.end { justify-content: flex-end; }
+.byte { width: 88px; height: 88px; flex: none; }
+.hello { flex: 1; min-width: 0; }
+.hello h1 { font-size: 22px; margin: 4px 0 2px; }
+.hello p { margin: 0 0 4px; }
+.flags { display: flex; flex: none; align-self: flex-start; }
+.flag { font-size: 28px; line-height: 1; padding: 8px 6px; border: 0; background: none; opacity: .35; cursor: pointer; }
+.flag.on { opacity: 1; }
+
+.banners { width: 100%; }
+.banner { margin: 8px 0 0; padding: 12px 16px; background: var(--yellow); text-align: left; font-size: 17px; }
+.banner.soft { background: var(--soft); font-size: 15px; }
+
+.qr { display: block; margin: 20px auto; image-rendering: pixelated; }
+.hold { font-size: 24px; font-weight: bold; }
+.hint { color: var(--grey); font-size: 14px; }
+.instructions { font-size: 18px; }
+.mono { font: 20px/1.3 ui-monospace, "SFMono-Regular", Menlo, monospace; }
+.note { background: var(--soft); padding: 10px 12px; }
+
+button { font: inherit; color: inherit; }
+.link { margin-top: 32px; min-height: 48px; padding: 8px 16px; border: 0; background: none; color: var(--grey); font-size: 15px; text-decoration: underline; cursor: pointer; }
+.button { margin: 12px 16px 0; min-height: 48px; min-width: 160px; padding: 10px 20px; border: 1px solid var(--line); border-radius: 8px; background: #f2f2f2; font-size: 17px; cursor: pointer; }
+.button.primary { background: #111; color: #fff; border-color: #111; }
+.button:disabled { opacity: .5; }
+
+.logo { width: 96px; height: 96px; border-radius: 22px; margin-top: 8px; }
+.title { font-size: 26px; margin: 16px 16px 4px; }
+.step { text-align: left; align-self: stretch; padding: 12px; margin: 8px 16px; border: 1px solid var(--line); border-radius: 8px; }
+.small { color: var(--grey); font-size: 14px; margin-top: 16px; }
+.credit { color: var(--grey); font-size: 12px; margin: 24px 16px 16px; }
+.warn { background: var(--yellow); padding: 12px 16px; }
+
+.dialog { max-width: min(420px, calc(100vw - 32px)); border: 0; border-radius: 12px; padding: 20px; text-align: left; }
+.dialog::backdrop { background: rgba(0, 0, 0, .45); }
+.dialog h2 { margin: 0 0 8px; font-size: 20px; }
+.dialog p { margin: 0 0 8px; }
+.dialog .row { display: flex; justify-content: flex-end; flex-wrap: wrap; }
+.dialog .button { min-width: 0; margin: 12px 0 0 12px; }
