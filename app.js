@@ -35,6 +35,8 @@ let wakeLock = null;
 /** The install screen's animation: the pending switch to its next picture. */
 let demoTimer = 0;
 let qrCanvas = null;
+/** CSS pixels the QR may take on the link screen once fitted to the screen; 0 = not fitted yet. */
+let qrRoom = 0;
 let banners = null;
 
 // Only on the PC, for testing in a tab: http://localhost:8000/?tab
@@ -119,6 +121,7 @@ addEventListener('popstate', (e) => {
 
 function render() {
   clearTimeout(timer);
+  qrRoom = 0;
   clearTimeout(demoTimer);
   qrCanvas = null;
   banners = null;
@@ -162,14 +165,14 @@ function codeView() {
 function registerView() {
   const done = el('button', 'button primary', s.done);
   done.onclick = () => history.back(); // always to the code screen, below this one in history
+  // The steps come first; then the QR, the key ID and Done together, the QR sized so Done needs no scrolling.
   return [
-    el('div', 'link-badge', s.linkBadge),
-    el('header', 'head end', [flags()]),
+    // No bar: the blue frame marks the screen for staff; the flags share the title's line (owner, 20 Oct).
+    el('header', 'link-head', [el('h1', 'link-title', s.linkTitle), flags()]),
     bannerBox(),
-    el('h1', 'title', s.linkTitle),
-    qr(),
     el('ol', 'steps', s.linkSteps.map((step) => el('li', '', step))),
-    el('p', 'mono', s.keyId + G.hex(G.keyId(devPk))),
+    qr(),
+    el('p', 'mono key-id', s.keyId + G.hex(G.keyId(devPk))),
     done,
   ];
 }
@@ -233,7 +236,7 @@ function stepOne(where, option) {
     // No browser named: Android opens the phone's own browser (Chrome may be switched off, as on the owner's Samsung).
     const open = el('a', 'button primary big', s.openInBrowser);
     open.href = `intent://${location.host}${location.pathname}#Intent;scheme=https;end`;
-    return [el('p', '', s.openInBrowserText), open];
+    return [el('p', '', s.openInBrowserText), open, nudge()];
   }
   if (where === 'ios-other') {
     const copy = el('button', 'button primary big', s.copyLink);
@@ -257,7 +260,23 @@ function stepOne(where, option) {
     };
     return [optionHead(option), save, el('details', 'byhand', [el('summary', '', s.installByHand), ...howTo(option)])];
   }
+  if (where === 'samsung') return [nudge(), el('p', 'or-stay', s.orStay), optionHead(option), ...howTo(option, true)];
   return [optionHead(option), ...howTo(option, true)];
+}
+
+/**
+ * Samsung Internet and browsers we have no steps for: suggest Firefox, which keeps the key safe
+ * (it agreed to protect storage on the owner's phone; Samsung Internet refused in a tab), one tap
+ * away on Google Play. A suggestion only: the steps stay.
+ */
+function nudge() {
+  const icon = el('img', 'brand');
+  icon.src = 'icons/brand/firefox.svg';
+  icon.alt = '';
+  const get = el('a', 'button big firefox', s.getFirefox);
+  get.href = 'https://play.google.com/store/apps/details?id=org.mozilla.firefox';
+  get.rel = 'noopener';
+  return el('div', 'nudge', [el('p', 'option-head', [icon, el('strong', '', s.nudge)]), get]);
 }
 
 /** A numbered step: a big number (or ✓) and a title, then its content. */
@@ -343,11 +362,17 @@ function demo(browser, list) {
   return [el('div', 'demo', [d.pic]), still ? el('p', 'aside center', s.demoTapHint) : ''];
 }
 
-/** Text with {menu}, {share} and {more} drawn as the buttons they name. */
+/** Text with {menu}, {share}, {more} and {addapp} drawn as the buttons and icons they name. */
 function withKeys(text) {
-  return text.split(/(\{menu\}|\{share\}|\{more\})/).filter(Boolean).map((part) => {
+  return text.split(/(\{menu\}|\{share\}|\{more\}|\{addapp\})/).filter(Boolean).map((part) => {
     if (part === '{menu}') return keyCap('⋮', 'menu');
     if (part === '{more}') return keyCap('⋯', 'more');
+    if (part === '{addapp}') {
+      const img = el('img', '');
+      img.src = 'icons/ui/add-to-homescreen.svg';
+      img.alt = ''; // Firefox's icon for the menu item named right after it
+      return el('span', 'key', [img]);
+    }
     if (part === '{share}') {
       const img = el('img', '');
       img.src = 'icons/ui/share.svg';
@@ -404,6 +429,7 @@ function tick() {
     lastT = t;
     const code = screen === 'register' ? G.registrationCode(devPk, k, t) : G.liveCode(devPk, k, t);
     draw(screen === 'register' ? G.registrationQr(code) : G.liveQr(code));
+    if (screen === 'register') requestAnimationFrame(fitLink);
   }
   timer = setTimeout(tick, 10_000 - (Date.now() % 10_000) + 20);
 }
@@ -412,7 +438,7 @@ function tick() {
  * Black on white, 4-module quiet zone, whole device pixels per module; by default as wide as the
  * screen allows. [room] is the most CSS pixels it may take.
  */
-function draw(code, canvas = qrCanvas, room = Math.min(document.documentElement.clientWidth, window.innerHeight * 0.62)) {
+function draw(code, canvas = qrCanvas, room = qrRoom || Math.min(document.documentElement.clientWidth, window.innerHeight * 0.62)) {
   const n = code.size + 8;
   const dpr = window.devicePixelRatio || 1;
   const scale = Math.max(1, Math.floor((room * dpr) / n));
@@ -430,7 +456,26 @@ function draw(code, canvas = qrCanvas, room = Math.min(document.documentElement.
   }
 }
 
+/**
+ * Link screen: shrinks the QR until Done fits on the screen as well, but never below 70% of the
+ * screen's width (the Android app's floor, so the reader still reads it at 5–10 cm). On a very
+ * small screen, or with a warning showing, Done then sits just below and the page scrolls.
+ */
+function fitLink() {
+  if (screen !== 'register' || !qrCanvas) return;
+  const over = document.documentElement.scrollHeight - window.innerHeight;
+  if (over <= 0) return;
+  const now = qrCanvas.getBoundingClientRect().height;
+  const room = Math.max(document.documentElement.clientWidth * 0.7, now - over - 2);
+  if (room < now - 1) {
+    qrRoom = room;
+    lastT = -1;
+    tick();
+  }
+}
+
 addEventListener('resize', () => {
+  qrRoom = 0;
   if (qrCanvas) {
     lastT = -1;
     tick();

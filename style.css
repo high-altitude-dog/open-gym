@@ -28,13 +28,17 @@ p { margin: 8px 16px; }
 .qr { display: block; margin: 20px auto; image-rendering: pixelated; }
 .hold { font-size: 24px; font-weight: bold; }
 .hint { color: var(--grey); font-size: 14px; }
-.steps { align-self: stretch; margin: 0 16px; padding-left: 28px; text-align: left; font-size: 18px; }
-.steps li { margin: 6px 0; }
+.steps { align-self: stretch; margin: 0 16px; padding-left: 26px; text-align: left; font-size: 16px; line-height: 1.3; }
+.steps li { margin: 3px 0; }
 .mono { font: 20px/1.3 ui-monospace, "SFMono-Regular", Menlo, monospace; }
-/* Link screen: a blue frame round the whole screen and a big VINCULAR bar, so staff can tell it from
-   the daily code at a glance. Blue: not a colour the reader's lights use. The QR keeps its white margin. */
+/* Link screen: a blue frame round the whole screen, so staff can tell it from the daily code at a
+   glance. Blue: not a colour the reader's lights use. The QR keeps its white margin. */
 body.linking::after { content: ''; position: fixed; inset: 0; border: 10px solid var(--link); pointer-events: none; z-index: 10; }
-.link-badge { align-self: stretch; padding: 14px 16px 12px; background: var(--link); color: #fff; font-size: 30px; font-weight: 800; letter-spacing: .08em; }
+.link-head { align-self: stretch; display: flex; align-items: flex-start; gap: 8px; padding: 18px 14px 4px 22px; text-align: left; }
+.link-title { flex: 1; margin: 6px 0 0; font-size: 21px; line-height: 1.2; }
+body.linking .qr { margin: 8px auto 4px; }
+.key-id { margin: 0 16px; font-size: 17px; }
+body.linking .button { margin: 8px 16px 16px; }
 
 button { font: inherit; color: inherit; }
 .link { margin-top: 32px; min-height: 48px; padding: 8px 16px; border: 0; background: none; color: var(--grey); font-size: 15px; text-decoration: underline; cursor: pointer; }
@@ -74,6 +78,10 @@ summary { min-height: 48px; padding: 12px 0; font-size: 18px; text-decoration: u
 .other .option { margin: 8px 0 20px; font-size: 18px; }
 .byhand { margin-top: 8px; }
 .allow { font-size: 17px; }
+.nudge { margin: 0 0 14px; padding: 12px 14px; border-radius: 12px; background: #fff3e6; }
+.nudge .option-head { margin: 0; }
+.button.firefox { margin: 10px 0 0; background: #fff; border: 2px solid #ff7139; color: #111; font-weight: bold; }
+.or-stay { margin: 4px 0 6px; color: var(--grey); }
 /* The animated phone: one picture per step, the matching step highlighted. */
 .demo { display: flex; justify-content: center; margin: 4px 0 14px; }
 .demo-phone { width: 190px; height: auto; cursor: pointer; }

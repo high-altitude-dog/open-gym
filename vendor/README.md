@@ -13,3 +13,6 @@ Bundled once by `../tools/vendor.sh` (esbuild 0.28.2, ES2020 modules, not minifi
 - `chrome.svg`, `firefox.svg`, `safari.svg`, `samsung.svg`: the full-colour browser logos from [browser-logos](https://github.com/alrra/browser-logos) (`@browser-logos/chrome` 2.0.0, `@browser-logos/firefox` 3.0.10, `@browser-logos/safari` 2.1.0, `@browser-logos/samsung-internet` 4.0.6), unchanged.
 - `apple.svg`: from [Simple Icons](https://simpleicons.org) 16.33.0 (CC0; the mark is single-colour).
 - `android.svg`: the full-body Android robot, [Android_robot.svg](https://commons.wikimedia.org/wiki/File:Android_robot.svg) from Wikimedia Commons, by Google Inc. (designed by Irina Blok), CC BY 3.0; recoloured from #A4C639 to the current Android green #3DDC84. *The Android robot is reproduced or modified from work created and shared by Google and used according to terms described in the Creative Commons 3.0 Attribution License*.
+- `../icons/ui/add-to-homescreen.svg`: Firefox for Android's `mozac_ic_add_to_homescreen_24` icon (Mozilla, MPL 2.0, notice kept in the file), converted from an Android vector drawable, so step 3 for Firefox shows the icon members see next to «Agregar app a la pantalla de inicio».
+- `../icons/ui/share.svg`: drawn for Open Gym after Safari's Share button.
+

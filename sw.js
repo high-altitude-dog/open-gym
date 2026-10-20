@@ -1,7 +1,7 @@
 // Offline: every app file is cached when the app is installed, and served from the cache after
 // that, so check-in works with no data. A changed sw.js is fetched in the background whenever
 // there's a connection: change VERSION with every release, or phones keep the old files.
-const VERSION = 'gym-access-0.1.12';
+const VERSION = 'gym-access-0.1.17';
 const FILES = [
   './',
   './index.html',
@@ -18,6 +18,7 @@ const FILES = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/maskable-512.png',
+  './icons/ui/add-to-homescreen.svg',
   './icons/ui/share.svg',
   './icons/apple-touch-icon.png',
   './icons/brand/android.svg',

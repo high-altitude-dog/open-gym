@@ -5,8 +5,6 @@ const ES = {
   languageName: 'Español',
   holdUp: 'Pon tu celular boca arriba debajo del lector de la recepción para entrar',
   linkAgain: '¿Tienes que vincular este celular?',
-  // A big blue bar on the link screen, so staff see at a glance it's the link code: the staff page's word.
-  linkBadge: 'VINCULAR',
   linkTitle: 'Vincula tu celular en recepción',
   linkSteps: [
     'Muestra esta pantalla al personal de recepción.',
@@ -19,7 +17,7 @@ const ES = {
   brightness: 'Sube el brillo de la pantalla al máximo.',
   storageWarning: 'Este celular no prometió guardar los datos de la aplicación. Si tu clave desaparece, pide en recepción que vinculen tu celular otra vez.',
   // Install screen: two steps; step 1 shows the browser this page is open in (app.js platform()).
-  // {menu}, {share} and {more} are drawn as the buttons themselves. «…» quote the browsers' own words.
+  // {menu}, {share}, {more} and {addapp} are drawn as the buttons and icons themselves. «…» quote the browsers' own words.
   installIntro: 'Esta es la aplicación de ingreso del gimnasio. Funciona en tu navegador. Guárdala en tu celular en 2 pasos.',
   installStep1: 'Guárdala en tu pantalla de inicio',
   installStep2: 'Ábrela desde tu pantalla de inicio',
@@ -30,13 +28,17 @@ const ES = {
   installOther: '¿Otro celular o navegador?',
   installChrome: ['Toca {menu} (arriba o abajo, a la derecha).', 'Toca «Instalar aplicación» o «Agregar a la pantalla principal».', 'Toca «Instalar» (o «Agregar»).'],
   // Firefox's words from Mozilla's Latin American Spanish (es-MX/es-AR) strings; its menu opens at the bottom (owner's phone, 20 Oct).
-  installFirefox: ['Toca {menu} (arriba o abajo, a la derecha).', 'Se abre un menú abajo: toca «Más».', 'Toca «Agregar app a la pantalla de inicio».', 'Toca «Añadir» (o «Agregar»).'],
+  installFirefox: ['Toca {menu} (arriba o abajo, a la derecha).', 'Se abre un menú abajo: toca {more} «Más».', 'Toca {addapp} «Agregar app a la pantalla de inicio».', 'Toca «Añadir» (o «Agregar»).'],
   installSafari: ['Toca {share} en la barra de abajo.', 'Desliza hacia abajo y toca «Agregar a inicio».', 'Toca «Agregar» arriba a la derecha.'],
   installSafariNote: 'Si no ves {share}, toca primero {more}.',
   // Samsung Internet's own Latin American Spanish (es-US) words, read from the app on the owner's phone (20 Oct).
   installSamsung: ['Toca {menu} abajo a la derecha.', 'Toca «Añadir página a».', 'Toca «Pantalla de inicio».', 'Toca «Añadir».'],
   installSamsungNote: 'Si no ves {menu}, mueve la página un poco hacia abajo con el dedo.',
   openInBrowserText: 'Este navegador no puede guardar la aplicación. Ábrela en el navegador de tu celular:',
+  // A gentle nudge for Samsung Internet and the browsers we have no steps for (owner, 20 Oct).
+  nudge: 'Open Gym funciona mejor con Firefox.',
+  getFirefox: 'Descargar Firefox',
+  orStay: 'O sigue aquí:',
   openInBrowser: 'Abrir en el navegador',
   openInSafariText: 'En iPhone, la aplicación se guarda desde Safari. Copia el enlace y pégalo en Safari:',
   copyLink: 'Copiar enlace',
@@ -83,7 +85,6 @@ const EN = {
   languageName: 'English',
   holdUp: 'Place your phone face up under the desk reader to check in',
   linkAgain: 'Need to link this phone?',
-  linkBadge: 'LINK',
   linkTitle: 'Link your phone at the front desk',
   linkSteps: [
     'Show this screen to the front desk staff.',
@@ -104,12 +105,15 @@ const EN = {
   installSaved: 'Saved ✓',
   installOther: 'Another phone or browser?',
   installChrome: ['Tap {menu} (top or bottom right).', 'Tap “Install app” or “Add to Home screen”.', 'Tap “Install” (or “Add”).'],
-  installFirefox: ['Tap {menu} (top or bottom right).', 'A menu opens at the bottom: tap “More”.', 'Tap “Add app to Home screen”.', 'Tap “Add”.'],
+  installFirefox: ['Tap {menu} (top or bottom right).', 'A menu opens at the bottom: tap {more} “More”.', 'Tap {addapp} “Add app to Home screen”.', 'Tap “Add”.'],
   installSafari: ['Tap {share} in the bar at the bottom.', 'Scroll down and tap “Add to Home Screen”.', 'Tap “Add” at the top right.'],
   installSafariNote: "If you can't see {share}, tap {more} first.",
   installSamsung: ['Tap {menu} at the bottom right.', 'Tap “Add page to”.', 'Tap “Home screen”.', 'Tap “Add”.'],
   installSamsungNote: "If you can't see {menu}, drag the page down a little.",
   openInBrowserText: "This browser can't save the app. Open it in your phone's browser:",
+  nudge: 'Open Gym works best with Firefox.',
+  getFirefox: 'Get Firefox',
+  orStay: 'Or carry on here:',
   openInBrowser: 'Open in browser',
   openInSafariText: 'On iPhone, the app is saved from Safari. Copy the link and paste it into Safari:',
   copyLink: 'Copy link',

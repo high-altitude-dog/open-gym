@@ -43,13 +43,18 @@ function page(y) {
   ];
 }
 
-/** A highlighted menu row with the browser's own words, outlined; long words wrap onto a second line. */
-function row(x, y, w, label, size = 10.5) {
-  const lines = wrap(label, Math.floor((w - 20) / (size * 0.64)));
+/**
+ * A highlighted menu row with the browser's own words, outlined; long words wrap onto a second line.
+ * [icon]: the menu's own icon before the words, as the browser draws it.
+ */
+function row(x, y, w, label, size = 10.5, icon = null) {
+  const indent = icon ? 30 : 10;
+  const lines = wrap(label, Math.floor((w - indent - 10) / (size * 0.64)));
   const h = 10 + lines.length * (size + 4);
   return [
     rect(x, y, w, h, 6, '#fde3d3'),
-    ...lines.map((l, i) => text(x + 10, y + 4 + (i + 1) * (size + 3), l, size, { 'font-weight': 'bold' })),
+    icon ? image(icon, x + 8, y + (h - 16) / 2, 16) : '',
+    ...lines.map((l, i) => text(x + indent, y + 4 + (i + 1) * (size + 3), l, size, { 'font-weight': 'bold' })),
     ...tapBox(x - 1, y - 1, w + 2, h + 2, 7),
   ];
 }
@@ -102,14 +107,14 @@ function dropDown(label, y = 126) {
  * Firefox's menu: a panel up from the bottom, a row of round buttons on top, then rows. Folded, its
  * last row is [label] with a ˅; unfolded (the next picture), [label] is a row further down the list.
  */
-function bottomMenu(label, folded) {
+function bottomMenu(label, folded, icon = null) {
   return [
     dim(),
     rect(10, 124, 180, 200, 14, '#f4f4f6'),
     rect(86, 132, 28, 4, 2, '#c8c8cc'),
     ...[40, 80, 120, 160].map((cx) => svg('circle', { cx, cy: 156, r: 9, fill: '#dcdce0' })),
     ...greyRows(30, folded ? [184, 206, 228] : [184, 206, 228, 296], 110),
-    ...row(18, folded ? 246 : 244, 164, label),
+    ...row(18, folded ? 246 : 244, 164, label, 10.5, icon),
     folded ? text(168, 264, '˅', 14, { 'text-anchor': 'middle', 'font-weight': 'bold' }) : '',
   ];
 }
@@ -123,7 +128,7 @@ const BUILD = {
   // to Home screen" is under "More", which unfolds; then Android's own "Add to Home screen?" box.
   firefox: (s) => ({
     base: [...topBar(), ...page(66)],
-    frames: [tap(178, 34), bottomMenu(s.demo.more, true), bottomMenu(s.demo.firefoxItem, false), confirm(s, s.demo.androidAdd)],
+    frames: [tap(178, 34), bottomMenu(`⋯  ${s.demo.more}`, true), bottomMenu(s.demo.firefoxItem, false, 'icons/ui/add-to-homescreen.svg'), confirm(s, s.demo.androidAdd)],
   }),
   // Samsung Internet 30 on the owner's Samsung (20 Oct): toolbar at the bottom, ⋮ at its right; a menu
   // pops up with "Add page to"; a list from the bottom with "Home screen"; then the launcher's box.
