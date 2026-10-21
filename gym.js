@@ -1,3 +1,3 @@
 // The gym's Ed25519 public key: must equal android/gym.properties (checked by test/test.mjs).
-// Beta: the throwaway test gym key. A new key here means an app update, not a re-link.
-export const GYM_PK_HEX = '4676015f8f2b26ee5d4177d38a6f57779aa16698254fb547724f3af3ac068720';
+// Made 2026-10-20 by tools/make_gym_key.py. A new key here means an app update, not a re-link.
+export const GYM_PK_HEX = 'b3bc4957550f8938f12066c773d4a446aa55cc9cdbe28ff4ce3d7e39f7696c39';
